@@ -2,23 +2,19 @@
 name = "roundable"
 version = "0.1.0"
 authors = ["Daniel Parks <oss-roundable@demonhorse.org>"]
-description = ""
+description = "Round numbers and durations to a given factor"
 homepage = "https://github.com/danielparks/roundable"
 repository = "https://github.com/danielparks/roundable"
 readme = "README.md"
-keywords = []
-categories = [] # https://crates.io/category_slugs
+keywords = ["round"]
+categories = ["mathematics", "date-and-time"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.56.1"
 
 [dev-dependencies]
 assert2 = "0.3.7"
-criterion = "0.5.1"
 
-[[bench]]
-name = "general"
-harness = false
 [lints]
 workspace = true
 
