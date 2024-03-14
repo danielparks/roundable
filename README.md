@@ -25,14 +25,15 @@ assert!(Duration::ZERO == Duration::from_millis(314).round_to(SECOND));
 assert!(MINUTE == Duration::from_millis(59_500).round_to(SECOND));
 ```
 
+## ⚠️ Development status
+
+This is in active development. The API may be entirely rewritten . I am open to
+[suggestions][issues].
+
 ## Minimum supported Rust version
 
 Currently the minimum supported Rust version (MSRV) is **1.56.1**. Future
 increases in the MSRV will require a major version bump.
-
-## Development status
-
-This is in active development. I am open to [suggestions][issues].
 
 ## License
 
