@@ -2,8 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## main branch
-
-### Features
+## Release 0.1.0 (2024-03-14)
 
 * Initial release.
