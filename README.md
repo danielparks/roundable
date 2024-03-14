@@ -27,7 +27,7 @@ assert!(MINUTE == Duration::from_millis(59_500).round_to(SECOND));
 
 ## ⚠️ Development status
 
-This is in active development. The API may be entirely rewritten . I am open to
+This is in active development. The API may be entirely rewritten. I am open to
 [suggestions][issues].
 
 ## Minimum supported Rust version
