@@ -87,7 +87,7 @@ pub const MINUTE: Duration = Duration::from_secs(60);
 /// ```
 pub const HOUR: Duration = Duration::from_secs(60 * 60);
 
-/// Add methods to round to an arbitrary factor.
+/// Methods to round the value to an arbitrary factor.
 ///
 /// For example, you might wish to round an integer to the nearest 10s:
 ///
@@ -95,16 +95,46 @@ pub const HOUR: Duration = Duration::from_secs(60 * 60);
 /// use roundable::Roundable;
 ///
 /// assert!(310 == 314.round_to(10));
-/// assert!(300 == 314.round_to(100));
+/// assert!(Some(300) == 314.try_round_to(100));
 /// ```
 pub trait Roundable: Sized {
-    /// Round to the nearest `factor`.
+    /// Round to the nearest `factor`. Panics if there is an overflow.
+    ///
+    /// ```rust
+    /// use roundable::Roundable;
+    ///
+    /// assert!(315 == 314.round_to(5));
+    /// assert!(-10 == (-15).round_to(10));
+    /// ```
+    ///
+    /// `255u8` can’t be rounded to the nearest 10 (which would be 260) because
+    /// 260 won’t fit in a `u8`:
+    ///
+    /// ```rust,should_panic
+    /// # use roundable::Roundable;
+    /// let _ = 255u8.round_to(10u8);
+    /// ```
     #[must_use]
     fn round_to(self, factor: Self) -> Self {
         self.try_round_to(factor).expect("overflow while rounding")
     }
 
-    /// Round to the nearest `factor`.
+    /// Round to the nearest `factor`. Returns `None` if there is an overflow.
+    ///
+    /// ```rust
+    /// use roundable::Roundable;
+    ///
+    /// assert!(Some(315) == 314.try_round_to(5));
+    /// assert!(Some(-10) == (-15).try_round_to(10));
+    /// ```
+    ///
+    /// `255u8` can’t be rounded to the nearest 10 (which would be 260) because
+    /// 260 won’t fit in a `u8`:
+    ///
+    /// ```rust
+    /// # use roundable::Roundable;
+    /// assert!(None == 255u8.try_round_to(10));
+    /// ```
     #[must_use]
     fn try_round_to(self, factor: Self) -> Option<Self>;
 }
@@ -284,6 +314,18 @@ mod tests {
         check!(0 == (-1i8).round_to(3));
         check!((-3) == (-2i8).round_to(3));
         check!((-3) == (-3i8).round_to(3));
+    }
+
+    #[test]
+    fn round_integer_to_ten() {
+        check!(10 == 14.round_to(10));
+        check!(20 == 15.round_to(10));
+        check!(20 == 16.round_to(10));
+
+        // Parentheses are to work around a compile failure in check!().
+        check!((-10) == (-14).round_to(10));
+        check!((-10) == (-15).round_to(10));
+        check!((-20) == (-16).round_to(10));
     }
 
     #[test]
