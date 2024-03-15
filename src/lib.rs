@@ -1,7 +1,7 @@
 //! # Roundable values
 //!
 //! This provides an implementation of rounding for various values, including
-//! [`std::time::Duration`].
+//! [`core::time::Duration`] (or `std::time::Duration`).
 //!
 //! ```rust
 //! use roundable::Roundable;
@@ -21,6 +21,11 @@
 //! assert!(MINUTE == Duration::from_millis(59_500).round_to(SECOND));
 //! ```
 //!
+//! ## `#![no_std]` by default
+//!
+//! You can use this crate with or without `std` and `alloc`. You do not need to
+//! enable or disable features either way.
+//!
 //! ## Minimum supported Rust version
 //!
 //! Currently the minimum supported Rust version (MSRV) is **1.56.1**. Future
@@ -28,8 +33,9 @@
 
 // Lint configuration in Cargo.toml isn’t supported by cargo-geiger.
 #![forbid(unsafe_code)]
+#![no_std]
 
-use std::time::Duration;
+use core::time::Duration;
 
 /// A microsecond. Useful for rounding [`Duration`].
 ///
