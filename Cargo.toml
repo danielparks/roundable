@@ -6,6 +6,7 @@ description = "Round numbers and durations to a given factor"
 homepage = "https://github.com/danielparks/roundable"
 repository = "https://github.com/danielparks/roundable"
 readme = "README.md"
+exclude = [".*", "/release.sh"]
 keywords = ["round", "rounding", "duration", "number"]
 categories = ["mathematics", "date-and-time", "no-std", "no-std::no-alloc"]
 license = "MIT OR Apache-2.0"
