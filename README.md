@@ -5,7 +5,10 @@
 ![Rust version 1.56.1+](https://img.shields.io/badge/Rust%20version-1.56.1%2B-success)
 
 This provides an implementation of rounding for various values, including
-[`std::time::Duration`][`Duration`].
+[`std::time::Duration`][`Duration`] (or `core::time::Duration`).
+
+This crate is does not need `std` or `alloc` (it’s always in `no_std` mode). No
+features need to be enabled or disabled.
 
 ```rust
 use roundable::Roundable;
@@ -52,5 +55,5 @@ additional terms or conditions.
 [docs.rs]: https://docs.rs/roundable/latest/roundable/
 [crates.io]: https://crates.io/crates/roundable
 [issues]: https://github.com/danielparks/roundable/issues
-[`Duration`]: https://doc.rust-lang.org/std/time/struct.Duration.html
+[`Duration`]: https://doc.rust-lang.org/core/time/struct.Duration.html
 [Constants]: https://docs.rs/roundable/latest/roundable/#Constants
