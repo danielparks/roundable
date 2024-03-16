@@ -38,6 +38,11 @@ awk-in-place Cargo.toml '
   }
   { print }'
 
+awk-in-place README.md '{
+    sub(/https:\/\/docs\.rs\/roundable\/[0-9]+.[0-9]+.[0-9]+\//, "https://docs.rs/roundable/'$version'/")
+    print
+  }'
+
 cargo check --quiet
 
 cargo semver-checks check-release
