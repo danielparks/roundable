@@ -112,36 +112,29 @@ pub trait Roundable: Sized {
 macro_rules! roundable_integer {
     ($($ty:ident)+) => {$(
         impl Roundable for $ty {
+            #[allow(clippy::integer_division, clippy::arithmetic_side_effects)]
             fn try_round_to(self, factor: Self) -> Option<Self> {
                 // FIXME: make into error
                 assert!(factor > 0, "try_round_to() requires positive factor");
 
-                #[allow(clippy::arithmetic_side_effects)]
                 let remainder = self % factor;
 
                 // Safe: remainder has the same sign as self, so subtracting
                 // remainder will always be closer to 0. Also, remainder is
                 // always between 0 and self, so it base can never switch signs.
-                #[allow(clippy::arithmetic_side_effects)]
                 let base = self - remainder;
 
                 #[allow(unused_comparisons)]
                 if self < 0 {
-                    #[allow(clippy::integer_division)]
-                    #[allow(clippy::arithmetic_side_effects)]
                     if remainder < factor / 2 + factor % 2 - factor {
-                        // FIXME: document how this can fail and test it
                         base.checked_sub(factor)
                     } else {
                         Some(base)
                     }
                 } else {
-                    #[allow(clippy::integer_division)]
-                    #[allow(clippy::arithmetic_side_effects)]
                     if remainder < factor / 2 + factor % 2 {
                         Some(base)
                     } else {
-                        // FIXME: document how this can fail and test it
                         base.checked_add(factor)
                     }
                 }
