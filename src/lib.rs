@@ -46,9 +46,10 @@
 mod duration;
 pub use duration::*;
 
-/// Methods to round the value to an arbitrary factor.
+/// Methods to round to an arbitrary factor.
 ///
-/// For example, you might wish to round an integer to the nearest 10s:
+/// For example, you might wish to round an integer to the nearest ten or
+/// nearest hundred:
 ///
 /// ```rust
 /// use roundable::Roundable;
@@ -73,6 +74,11 @@ pub trait Roundable: Sized {
     /// # use roundable::Roundable;
     /// let _ = 255u8.round_to(10u8);
     /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if `factor` is not positive, e.g. if it’s 0, or if rounding would
+    /// return a value that does not fit in the return type.
     #[must_use]
     fn round_to(self, factor: Self) -> Self {
         self.try_round_to(factor).expect("overflow while rounding")
@@ -94,6 +100,10 @@ pub trait Roundable: Sized {
     /// # use roundable::Roundable;
     /// assert!(None == 255u8.try_round_to(10));
     /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if `factor` is not positive, e.g. if it’s 0.
     #[must_use]
     fn try_round_to(self, factor: Self) -> Option<Self>;
 }
@@ -102,36 +112,29 @@ pub trait Roundable: Sized {
 macro_rules! roundable_integer {
     ($($ty:ident)+) => {$(
         impl Roundable for $ty {
+            #[allow(clippy::integer_division, clippy::arithmetic_side_effects)]
             fn try_round_to(self, factor: Self) -> Option<Self> {
                 // FIXME: make into error
                 assert!(factor > 0, "try_round_to() requires positive factor");
 
-                #[allow(clippy::arithmetic_side_effects)]
                 let remainder = self % factor;
 
                 // Safe: remainder has the same sign as self, so subtracting
                 // remainder will always be closer to 0. Also, remainder is
                 // always between 0 and self, so it base can never switch signs.
-                #[allow(clippy::arithmetic_side_effects)]
                 let base = self - remainder;
 
                 #[allow(unused_comparisons)]
                 if self < 0 {
-                    #[allow(clippy::integer_division)]
-                    #[allow(clippy::arithmetic_side_effects)]
                     if remainder < factor / 2 + factor % 2 - factor {
-                        // FIXME: document how this can fail and test it
                         base.checked_sub(factor)
                     } else {
                         Some(base)
                     }
                 } else {
-                    #[allow(clippy::integer_division)]
-                    #[allow(clippy::arithmetic_side_effects)]
                     if remainder < factor / 2 + factor % 2 {
                         Some(base)
                     } else {
-                        // FIXME: document how this can fail and test it
                         base.checked_add(factor)
                     }
                 }
@@ -203,7 +206,6 @@ mod tests {
 
     #[test]
     fn round_small_signed_integer() {
-        // FIXME: what if factor is negative?
         check!(10 == 10i8.round_to(1));
 
         check!(0 == 0i8.round_to(2));
@@ -261,8 +263,19 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_integer_zero_factor() {
+        let _ = 0.round_to(0);
+    }
+
+    #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_integer_negative_factor() {
+        let _ = 0.round_to(-1);
+    }
+
+    #[test]
     fn round_small_float() {
-        // FIXME: what if factor is negative?
         check!(10.0 == 10.0.round_to(1.0));
 
         check!(0.0 == 0.0.round_to(2.0));
@@ -313,5 +326,17 @@ mod tests {
         check!(0.0 == (f32::MIN * 0.4).round_to(f32::MAX));
         check!(0.0 == (f32::MIN * 0.5).round_to(f32::MAX));
         check!(-f32::MAX == (f32::MIN * 0.6).round_to(f32::MAX));
+    }
+
+    #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_float_zero_factor() {
+        let _ = 0.0.round_to(0.0);
+    }
+
+    #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_float_negative_factor() {
+        let _ = 0.0.round_to(-1.0);
     }
 }
