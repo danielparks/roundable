@@ -217,17 +217,16 @@ mod tests {
         check!(3 == 2i8.round_to(3));
         check!(3 == 3i8.round_to(3));
 
-        // Parentheses are to work around a compile failure in check!().
-        check!((-10) == (-10i8).round_to(1));
+        check!(-10 == (-10i8).round_to(1));
 
         check!(0 == (-1i8).round_to(2));
-        check!((-2) == (-2i8).round_to(2));
-        check!((-2) == (-3i8).round_to(2));
-        check!((-4) == (-4i8).round_to(2));
+        check!(-2 == (-2i8).round_to(2));
+        check!(-2 == (-3i8).round_to(2));
+        check!(-4 == (-4i8).round_to(2));
 
         check!(0 == (-1i8).round_to(3));
-        check!((-3) == (-2i8).round_to(3));
-        check!((-3) == (-3i8).round_to(3));
+        check!(-3 == (-2i8).round_to(3));
+        check!(-3 == (-3i8).round_to(3));
     }
 
     #[test]
@@ -236,10 +235,9 @@ mod tests {
         check!(20 == 15.round_to(10));
         check!(20 == 16.round_to(10));
 
-        // Parentheses are to work around a compile failure in check!().
-        check!((-10) == (-14).round_to(10));
-        check!((-10) == (-15).round_to(10));
-        check!((-20) == (-16).round_to(10));
+        check!(-10 == (-14).round_to(10));
+        check!(-10 == (-15).round_to(10));
+        check!(-20 == (-16).round_to(10));
     }
 
     #[test]
@@ -278,17 +276,27 @@ mod tests {
         check!(3.0 == 2.0.round_to(3.0));
         check!(3.0 == 3.0.round_to(3.0));
 
-        // Parentheses are to work around a compile failure in check!().
-        check!((-10.0) == (-10.0).round_to(1.0));
+        check!(-10.0 == (-10.0).round_to(1.0));
 
         check!(0.0 == (-1.0).round_to(2.0));
-        check!((-2.0) == (-2.0).round_to(2.0));
-        check!((-2.0) == (-3.0).round_to(2.0));
-        check!((-4.0) == (-4.0).round_to(2.0));
+        check!(-2.0 == (-2.0).round_to(2.0));
+        check!(-2.0 == (-3.0).round_to(2.0));
+        check!(-4.0 == (-4.0).round_to(2.0));
 
         check!(0.0 == (-1.0).round_to(3.0));
-        check!((-3.0) == (-2.0).round_to(3.0));
-        check!((-3.0) == (-3.0).round_to(3.0));
+        check!(-3.0 == (-2.0).round_to(3.0));
+        check!(-3.0 == (-3.0).round_to(3.0));
+    }
+
+    #[test]
+    fn round_float_to_ten() {
+        check!(10.0 == 14.9.round_to(10.0));
+        check!(20.0 == 15.0.round_to(10.0));
+        check!(20.0 == 15.1.round_to(10.0));
+
+        check!(-10.0 == (-14.9).round_to(10.0));
+        check!(-10.0 == (-15.0).round_to(10.0));
+        check!(-20.0 == (-15.1).round_to(10.0));
     }
 
     #[test]
