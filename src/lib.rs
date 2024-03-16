@@ -109,12 +109,14 @@ macro_rules! roundable_integer {
                 #[allow(clippy::arithmetic_side_effects)]
                 let remainder = self % factor;
 
+                // Safe: remainder has the same sign as self, so subtracting
+                // remainder will always be closer to 0. Also, remainder is
+                // always between 0 and self, so it base can never switch signs.
+                #[allow(clippy::arithmetic_side_effects)]
+                let base = self - remainder;
+
                 #[allow(unused_comparisons)]
                 if self < 0 {
-                    // Safe: self ≤ remainder ≤ 0, so self - remainder ≥ self
-                    #[allow(clippy::arithmetic_side_effects)]
-                    let base = self - remainder;
-
                     #[allow(clippy::integer_division)]
                     #[allow(clippy::arithmetic_side_effects)]
                     if remainder < factor / 2 + factor % 2 - factor {
@@ -124,10 +126,6 @@ macro_rules! roundable_integer {
                         Some(base)
                     }
                 } else {
-                    // Safe: 0 ≤ remainder ≤ self
-                    #[allow(clippy::arithmetic_side_effects)]
-                    let base = self - remainder;
-
                     #[allow(clippy::integer_division)]
                     #[allow(clippy::arithmetic_side_effects)]
                     if remainder < factor / 2 + factor % 2 {
