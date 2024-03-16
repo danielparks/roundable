@@ -206,7 +206,6 @@ mod tests {
 
     #[test]
     fn round_small_signed_integer() {
-        // FIXME: what if factor is negative?
         check!(10 == 10i8.round_to(1));
 
         check!(0 == 0i8.round_to(2));
@@ -264,8 +263,19 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_integer_zero_factor() {
+        let _ = 0.round_to(0);
+    }
+
+    #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_integer_negative_factor() {
+        let _ = 0.round_to(-1);
+    }
+
+    #[test]
     fn round_small_float() {
-        // FIXME: what if factor is negative?
         check!(10.0 == 10.0.round_to(1.0));
 
         check!(0.0 == 0.0.round_to(2.0));
@@ -316,5 +326,17 @@ mod tests {
         check!(0.0 == (f32::MIN * 0.4).round_to(f32::MAX));
         check!(0.0 == (f32::MIN * 0.5).round_to(f32::MAX));
         check!(-f32::MAX == (f32::MIN * 0.6).round_to(f32::MAX));
+    }
+
+    #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_float_zero_factor() {
+        let _ = 0.0.round_to(0.0);
+    }
+
+    #[test]
+    #[should_panic(expected = "try_round_to() requires positive factor")]
+    fn round_float_negative_factor() {
+        let _ = 0.0.round_to(-1.0);
     }
 }
