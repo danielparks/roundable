@@ -114,7 +114,6 @@ macro_rules! roundable_integer {
         impl Roundable for $ty {
             #[allow(clippy::integer_division, clippy::arithmetic_side_effects)]
             fn try_round_to(self, factor: Self) -> Option<Self> {
-                // FIXME: make into error
                 assert!(factor > 0, "try_round_to() requires positive factor");
 
                 let remainder = self % factor;
@@ -151,7 +150,6 @@ macro_rules! roundable_float {
     ($($ty:ident)+) => {$(
         impl Roundable for $ty {
             fn try_round_to(self, factor: Self) -> Option<Self> {
-                // FIXME: make into error
                 assert!(factor > 0.0, "try_round_to() requires positive factor");
 
                 #[allow(clippy::arithmetic_side_effects)]
