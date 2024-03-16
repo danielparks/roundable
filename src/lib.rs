@@ -125,12 +125,14 @@ macro_rules! roundable_integer {
 
                 #[allow(unused_comparisons)]
                 if self < 0 {
+                    // Add factor%2 to make things work when factor is odd.
                     if remainder < factor / 2 + factor % 2 - factor {
                         base.checked_sub(factor)
                     } else {
                         Some(base)
                     }
                 } else {
+                    // Add factor%2 to make things work when factor is odd.
                     if remainder < factor / 2 + factor % 2 {
                         Some(base)
                     } else {
