@@ -46,9 +46,10 @@
 mod duration;
 pub use duration::*;
 
-/// Methods to round the value to an arbitrary factor.
+/// Methods to round to an arbitrary factor.
 ///
-/// For example, you might wish to round an integer to the nearest 10s:
+/// For example, you might wish to round an integer to the nearest ten or
+/// nearest hundred:
 ///
 /// ```rust
 /// use roundable::Roundable;
@@ -73,6 +74,11 @@ pub trait Roundable: Sized {
     /// # use roundable::Roundable;
     /// let _ = 255u8.round_to(10u8);
     /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if `factor` is not positive, e.g. if it’s 0, or if rounding would
+    /// return a value that does not fit in the return type.
     #[must_use]
     fn round_to(self, factor: Self) -> Self {
         self.try_round_to(factor).expect("overflow while rounding")
@@ -94,6 +100,10 @@ pub trait Roundable: Sized {
     /// # use roundable::Roundable;
     /// assert!(None == 255u8.try_round_to(10));
     /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if `factor` is not positive, e.g. if it’s 0.
     #[must_use]
     fn try_round_to(self, factor: Self) -> Option<Self>;
 }
