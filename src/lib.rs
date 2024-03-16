@@ -149,19 +149,22 @@ roundable_integer!(i8 i16 i32 i64 i128 isize);
 macro_rules! roundable_float {
     ($($ty:ident)+) => {$(
         impl Roundable for $ty {
+            #[allow(clippy::arithmetic_side_effects)]
             fn try_round_to(self, factor: Self) -> Option<Self> {
                 assert!(factor > 0.0, "try_round_to() requires positive factor");
 
-                #[allow(clippy::arithmetic_side_effects)]
                 let remainder = self % factor;
                 let remainder = if remainder < 0.0 {
+                    // Safe: remainder is negative so adding it to factor will
+                    // never overflow (|remainder| < factor).
                     factor + remainder
                 } else {
                     remainder
                 };
 
-                // remainder <= self
-                #[allow(clippy::arithmetic_side_effects)]
+                // Safe: remainder has the same sign as self, so subtracting
+                // remainder will always be closer to 0. Also, remainder is
+                // always between 0 and self, so it base can never switch signs.
                 let base = self - remainder;
 
                 if remainder < factor / 2.0 {
