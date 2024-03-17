@@ -14,6 +14,8 @@ The [`Roundable`] trait adds the following functions to roundable values:
    `None` on overflow)
  * [`Roundable::round_to(factor, tie_strategy)`][`round_to()`] (panics on
    overflow)
+ * [`Roundable::round_up_to(factor)`](`round_up_to()`)
+   (panics on overflow; rounds ties to the larger round number)
 
 ### Example
 
@@ -92,6 +94,7 @@ additional terms or conditions.
 [`Roundable`]: https://docs.rs/roundable/0.1.1/roundable/trait.Roundable.html
 [`try_round_to()`]: https://docs.rs/roundable/0.1.1/roundable/trait.Roundable.html#tymethod.try_round_to
 [`round_to()`]: https://docs.rs/roundable/0.1.1/roundable/trait.Roundable.html#method.round_to
+[`round_up_to()`]: https://docs.rs/roundable/0.1.1/roundable/trait.Roundable.html#method.round_up_to
 [`Tie::Up`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.Up
 [`Tie::Down`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.Down
 [`Tie::TowardZero`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.TowardZero

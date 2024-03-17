@@ -10,14 +10,16 @@
 //!    (returns `None` on overflow)
 //!  * [`Roundable::round_to(factor, tie_strategy)`](Roundable::round_to())
 //!    (panics on overflow)
+//!  * [`Roundable::round_up_to(factor)`](Roundable::round_up_to())
+//!    (panics on overflow; rounds ties to the larger round number)
 //!
 //! ### Example
 //!
 //! ```rust
 //! use roundable::{Roundable, Tie};
 //!
-//! assert!(310 == 314.round_to(10, Tie::Up));
-//! assert!(300.0 == 314.1.round_to(100.0, Tie::Up));
+//! assert!(310 == 314.round_up_to(10));
+//! assert!(300.0 == 314.1.round_up_to(100.0));
 //!
 //! // To avoid panicking on overflow:
 //! assert!(Some(260) == 255.try_round_to(10, Tie::Up));
@@ -205,10 +207,44 @@ pub enum Tie {
 /// ```rust
 /// use roundable::{Roundable, Tie};
 ///
-/// assert!(310 == 314.round_to(10, Tie::Up));
+/// assert!(320 == 315.round_up_to(10));
+/// assert!(310 == 315.round_to(10, Tie::Down));
 /// assert!(Some(300) == 314.try_round_to(100, Tie::Up));
 /// ```
 pub trait Roundable: Sized {
+    /// Traditional round to the nearest `factor`. Panics on overflow.
+    ///
+    /// Ties (values exactly halfway between to round numbers) are handled by
+    /// choosing the larger round number (see [`Tie::Up`]).
+    ///
+    /// See [`Self::round_to()`] to use other tie strategies. This is exactly
+    /// equivalent to `value.round_to(factor, Tie::Up)`.
+    ///
+    /// ```rust
+    /// use roundable::Roundable;
+    ///
+    /// assert!(10 == 14.round_up_to(10));
+    /// assert!(20 == 15.round_up_to(10));
+    /// assert!(-10 == (-15).round_up_to(10));
+    /// ```
+    ///
+    /// `255u8` can’t be rounded to the nearest 10 (which would be 260) because
+    /// 260 won’t fit in a `u8`:
+    ///
+    /// ```rust,should_panic
+    /// # use roundable::{Roundable, Tie};
+    /// let _ = 255u8.round_to(10u8, Tie::Up);
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if `factor` is not positive, e.g. if it’s 0, or if rounding would
+    /// return a value that does not fit in the return type.
+    #[must_use]
+    fn round_up_to(self, factor: Self) -> Self {
+        self.round_to(factor, Tie::Up)
+    }
+
     /// Round to the nearest `factor`. Panics if there is an overflow.
     ///
     /// Ties (values exactly halfway between to round numbers) are handled
