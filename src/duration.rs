@@ -1,63 +1,63 @@
 //! Functions, constants, etc. related to Duration.
 
-use crate::Roundable;
+use crate::{Roundable, Tie};
 use core::time::Duration;
 
 /// A microsecond. Useful for rounding [`Duration`].
 ///
 /// ```rust
-/// use roundable::{MICROSECOND, Roundable};
+/// use roundable::{MICROSECOND, Roundable, Tie};
 /// use std::time::Duration;
 ///
-/// assert!(MICROSECOND == Duration::from_nanos(500).round_to(MICROSECOND));
+/// assert!(MICROSECOND == Duration::from_nanos(500).round_to(MICROSECOND, Tie::Up));
 /// ```
 pub const MICROSECOND: Duration = Duration::from_micros(1);
 
 /// A millisecond. Useful for rounding [`Duration`].
 ///
 /// ```rust
-/// use roundable::{MILLISECOND, Roundable};
+/// use roundable::{MILLISECOND, Roundable, Tie};
 /// use std::time::Duration;
 ///
-/// assert!(MILLISECOND == Duration::from_micros(500).round_to(MILLISECOND));
+/// assert!(MILLISECOND == Duration::from_micros(500).round_to(MILLISECOND, Tie::Up));
 /// ```
 pub const MILLISECOND: Duration = Duration::from_millis(1);
 
 /// A second. Useful for rounding [`Duration`].
 ///
 /// ```rust
-/// use roundable::{SECOND, Roundable};
+/// use roundable::{SECOND, Roundable, Tie};
 /// use std::time::Duration;
 ///
-/// assert!(SECOND == Duration::from_millis(500).round_to(SECOND));
+/// assert!(SECOND == Duration::from_millis(500).round_to(SECOND, Tie::Up));
 /// ```
 pub const SECOND: Duration = Duration::from_secs(1);
 
 /// A minute. Useful for rounding [`Duration`].
 ///
 /// ```rust
-/// use roundable::{MINUTE, Roundable};
+/// use roundable::{MINUTE, Roundable, Tie};
 /// use std::time::Duration;
 ///
-/// assert!(MINUTE == Duration::from_secs(30).round_to(MINUTE));
+/// assert!(MINUTE == Duration::from_secs(30).round_to(MINUTE, Tie::Up));
 /// ```
 pub const MINUTE: Duration = Duration::from_secs(60);
 
 /// An hour. Useful for rounding [`Duration`].
 ///
 /// ```rust
-/// use roundable::{HOUR, Roundable};
+/// use roundable::{HOUR, Roundable, Tie};
 /// use std::time::Duration;
 ///
-/// assert!(HOUR == Duration::from_secs(30*60).round_to(HOUR));
+/// assert!(HOUR == Duration::from_secs(30*60).round_to(HOUR, Tie::Up));
 /// ```
 pub const HOUR: Duration = Duration::from_secs(60 * 60);
 
 impl Roundable for Duration {
-    fn try_round_to(self, factor: Self) -> Option<Self> {
+    fn try_round_to(self, factor: Self, tie: Tie) -> Option<Self> {
         // Duration will always fit into u128 as nanoseconds.
         self.as_nanos()
-            .try_round_to(factor.as_nanos())
+            .try_round_to(factor.as_nanos(), tie)
             .map(nanos_to_duration)
     }
 }
@@ -109,53 +109,53 @@ mod tests {
 
     #[test]
     fn round_millisecond_to_nearest_millisecond() {
-        check!(ms(10) == ms(10).round_to(MILLISECOND));
+        check!(ms(10) == ms(10).round_to(MILLISECOND, Tie::Up));
 
-        check!(ms(10) == ms(10).round_to(ms(2)));
-        check!(ms(10) == ms(9).round_to(ms(2)));
+        check!(ms(10) == ms(10).round_to(ms(2), Tie::Up));
+        check!(ms(10) == ms(9).round_to(ms(2), Tie::Up));
 
-        check!(ms(9) == ms(9).round_to(ms(3)));
-        check!(ms(9) == ms(10).round_to(ms(3)));
-        check!(ms(12) == ms(11).round_to(ms(3)));
-        check!(ms(12) == ms(12).round_to(ms(3)));
+        check!(ms(9) == ms(9).round_to(ms(3), Tie::Up));
+        check!(ms(9) == ms(10).round_to(ms(3), Tie::Up));
+        check!(ms(12) == ms(11).round_to(ms(3), Tie::Up));
+        check!(ms(12) == ms(12).round_to(ms(3), Tie::Up));
     }
 
     #[test]
     fn round_second_to_nearest_millisecond() {
-        check!(ms(1_010) == ms(1_010).round_to(MILLISECOND));
+        check!(ms(1_010) == ms(1_010).round_to(MILLISECOND, Tie::Up));
 
-        check!(ms(1_010) == ms(1_010).round_to(ms(2)));
-        check!(ms(1_010) == ms(1_009).round_to(ms(2)));
+        check!(ms(1_010) == ms(1_010).round_to(ms(2), Tie::Up));
+        check!(ms(1_010) == ms(1_009).round_to(ms(2), Tie::Up));
 
-        check!(ms(1_008) == ms(1_008).round_to(ms(3)));
-        check!(ms(1_008) == ms(1_009).round_to(ms(3)));
-        check!(ms(1_011) == ms(1_010).round_to(ms(3)));
-        check!(ms(1_011) == ms(1_011).round_to(ms(3)));
+        check!(ms(1_008) == ms(1_008).round_to(ms(3), Tie::Up));
+        check!(ms(1_008) == ms(1_009).round_to(ms(3), Tie::Up));
+        check!(ms(1_011) == ms(1_010).round_to(ms(3), Tie::Up));
+        check!(ms(1_011) == ms(1_011).round_to(ms(3), Tie::Up));
     }
 
     #[test]
     fn round_second_to_nearest_second() {
-        check!(ms(0) == ms(499).round_to(SECOND));
-        check!(SECOND == ms(500).round_to(SECOND));
-        check!(SECOND == ms(1_010).round_to(SECOND));
-        check!(SECOND == ms(1_499).round_to(SECOND));
-        check!(ms(2_000) == ms(1_500).round_to(SECOND));
+        check!(ms(0) == ms(499).round_to(SECOND, Tie::Up));
+        check!(SECOND == ms(500).round_to(SECOND, Tie::Up));
+        check!(SECOND == ms(1_010).round_to(SECOND, Tie::Up));
+        check!(SECOND == ms(1_499).round_to(SECOND, Tie::Up));
+        check!(ms(2_000) == ms(1_500).round_to(SECOND, Tie::Up));
 
-        check!(ms(1_001) == ms(1_000).round_to(ms(1_001)));
-        check!(ms(1_001) == ms(1_001).round_to(ms(1_001)));
-        check!(ms(1_001) == ms(1_002).round_to(ms(1_001)));
+        check!(ms(1_001) == ms(1_000).round_to(ms(1_001), Tie::Up));
+        check!(ms(1_001) == ms(1_001).round_to(ms(1_001), Tie::Up));
+        check!(ms(1_001) == ms(1_002).round_to(ms(1_001), Tie::Up));
     }
 
     #[test]
     fn round_to_giant_factor() {
-        check!(ms(0) == ms(1_000_000).round_to(Duration::MAX));
-        check!(Duration::MAX == Duration::MAX.round_to(Duration::MAX));
+        check!(ms(0) == ms(1_000_000).round_to(Duration::MAX, Tie::Up));
+        check!(Duration::MAX == Duration::MAX.round_to(Duration::MAX, Tie::Up));
     }
 
     #[test]
     #[should_panic(expected = "try_round_to() requires positive factor")]
     fn round_to_zero_factor() {
-        let _ = ms(10).round_to(ms(0));
+        let _ = ms(10).round_to(ms(0), Tie::Up);
     }
 
     /// Theoretical maximum Duration as nanoseconds (based on u64 for seconds).
