@@ -44,8 +44,9 @@ the following rules:
 
 ### Rounding `Duration`
 
-See [the list of constants][constants] for a list of time units that make
-rounding [`Duration`][] easier.
+[`Duration`] can be rounded to a `Duration` factor, just like a number type. For
+convenience, there are a number of [constants] that can be used to make rounding
+`Duration` easier.
 
 ```rust
 use roundable::{SECOND, MINUTE, Roundable, Tie};
@@ -97,4 +98,4 @@ additional terms or conditions.
 [`Tie::AwayFromZero`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.AwayFromZero
 [`Tie::TowardEven`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.TowardEven
 [`Tie::TowardOdd`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.TowardOdd
-[Constants]: https://docs.rs/roundable/0.1.1/roundable/#constants
+[constants]: https://docs.rs/roundable/0.1.1/roundable/#constants

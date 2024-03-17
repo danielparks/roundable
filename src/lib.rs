@@ -40,8 +40,9 @@
 //!
 //! ## Rounding `Duration`
 //!
-//! See [the list of constants](#constants) for a list of time units that make
-//! rounding [`Duration`](core::time::Duration) easier.
+//! [`Duration`](core::time::Duration) can be rounded to a `Duration` factor,
+//! just like a number type. For convenience, there are a number of
+//! [constants](#constants) that can be used to make rounding `Duration` easier.
 //!
 //! ```rust
 //! use roundable::{SECOND, MINUTE, Roundable, Tie};
