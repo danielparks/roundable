@@ -1,6 +1,6 @@
 [package]
 name = "roundable"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Daniel Parks <oss-roundable@demonhorse.org>"]
 description = "Round numbers and durations to a given factor"
 homepage = "https://github.com/danielparks/roundable"

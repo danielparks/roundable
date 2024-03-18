@@ -85,17 +85,17 @@ Unless you explicitly state otherwise, any contribution you submit as defined
 in the Apache 2.0 license shall be dual licensed as above, without any
 additional terms or conditions.
 
-[docs.rs]: https://docs.rs/roundable/0.1.1/roundable/
+[docs.rs]: https://docs.rs/roundable/0.2.0/roundable/
 [crates.io]: https://crates.io/crates/roundable
 [issues]: https://github.com/danielparks/roundable/issues
 [`Duration`]: https://doc.rust-lang.org/core/time/struct.Duration.html
-[`Roundable`]: https://docs.rs/roundable/0.1.1/roundable/trait.Roundable.html
-[`try_round_to()`]: https://docs.rs/roundable/0.1.1/roundable/trait.Roundable.html#tymethod.try_round_to
-[`round_to()`]: https://docs.rs/roundable/0.1.1/roundable/trait.Roundable.html#method.round_to
-[`Tie::Up`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.Up
-[`Tie::Down`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.Down
-[`Tie::TowardZero`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.TowardZero
-[`Tie::AwayFromZero`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.AwayFromZero
-[`Tie::TowardEven`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.TowardEven
-[`Tie::TowardOdd`]: https://docs.rs/roundable/0.1.1/roundable/enum.Tie.html#variant.TowardOdd
-[constants]: https://docs.rs/roundable/0.1.1/roundable/#constants
+[`Roundable`]: https://docs.rs/roundable/0.2.0/roundable/trait.Roundable.html
+[`try_round_to()`]: https://docs.rs/roundable/0.2.0/roundable/trait.Roundable.html#tymethod.try_round_to
+[`round_to()`]: https://docs.rs/roundable/0.2.0/roundable/trait.Roundable.html#method.round_to
+[`Tie::Up`]: https://docs.rs/roundable/0.2.0/roundable/enum.Tie.html#variant.Up
+[`Tie::Down`]: https://docs.rs/roundable/0.2.0/roundable/enum.Tie.html#variant.Down
+[`Tie::TowardZero`]: https://docs.rs/roundable/0.2.0/roundable/enum.Tie.html#variant.TowardZero
+[`Tie::AwayFromZero`]: https://docs.rs/roundable/0.2.0/roundable/enum.Tie.html#variant.AwayFromZero
+[`Tie::TowardEven`]: https://docs.rs/roundable/0.2.0/roundable/enum.Tie.html#variant.TowardEven
+[`Tie::TowardOdd`]: https://docs.rs/roundable/0.2.0/roundable/enum.Tie.html#variant.TowardOdd
+[constants]: https://docs.rs/roundable/0.2.0/roundable/#constants
