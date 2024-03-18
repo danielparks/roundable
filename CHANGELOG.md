@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## main branch
+
 ## Release 0.2.0 (2024-03-18)
 
 * Allow selecting the rule for dealing with values that are exactly halfway
