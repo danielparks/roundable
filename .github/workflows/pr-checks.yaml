@@ -53,7 +53,7 @@ jobs:
         with:
           tool: cargo-msrv
       - run: cargo msrv --version
-      - run: cargo msrv verify
+      - run: cargo msrv verify --log-target stdout --log-level debug
 
   test:
     name: cargo test
