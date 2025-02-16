@@ -14,7 +14,7 @@ edition = "2021"
 rust-version = "1.56.1"
 
 [dev-dependencies]
-assert2 = "0.3.7"
+assert2 = "0.3.11"
 
 [lints]
 workspace = true
