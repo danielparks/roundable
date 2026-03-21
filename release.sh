@@ -14,6 +14,61 @@ awk-in-place () {
   rm "$tmpfile"
 }
 
+check-changes () {
+  if git ls-files --exclude-standard --other | grep . >/dev/null ; then
+    echo 'Found untracked files:' >&2
+    git ls-files --exclude-standard --other | sed -e 's/^/  /' >&2
+    echo >&2
+    echo 'Please commit changes before proceeding.' >&2
+    return 1
+  fi
+
+  git diff --color --exit-code HEAD || {
+    echo >&2
+    echo 'Please commit changes before proceeding.' >&2
+    return 1
+  }
+}
+
+crate-names () {
+  cargo metadata --format-version 1 --no-deps | jq -r '.packages[].name'
+}
+
+branch-name () {
+  git rev-parse --abbrev-ref HEAD
+}
+
+auto-pr () {
+  local branch_name="$(branch-name)"
+  if [[ "$(branch-name)" = main ]] ; then
+    echo "Cannot auto-pr on main branch." >&2
+    return 1
+  fi
+
+  pr_url=$((gh pr view --json url,closed 2>/dev/null || true) \
+    | jq -r 'select(.closed | not) | .url')
+
+  if [[ "$pr_url" ]] ; then
+    echo "Found existing PR: $pr_url"
+    echo
+  else
+    # Create a PR
+    gh pr create --fill-verbose --title "$1"
+  fi
+
+  gh pr merge --disable-auto --delete-branch
+  sleep 3
+  gh pr checks --watch --fail-fast
+
+  git checkout main
+  git pull
+  git merge --ff-only "$branch_name"
+  git push origin HEAD
+
+  git branch -d "$branch_name"
+  git push origin --delete "$branch_name"
+}
+
 confirm () {
   local prompt="$1"
   local answer
@@ -25,9 +80,30 @@ confirm () {
 }
 
 case $version in
-  +([0-9]).+([0-9]).+([0-9])) ;; # Good
+  +([0-9]).+([0-9]).+([0-9])*) ;; # Good
   *) echo "Usage $0 VERSION" >&2 ; exit 1 ;;
 esac
+
+command -v gh &>/dev/null || {
+  echo "gh not installed (https://cli.github.com)" >&2
+  exit 1
+}
+
+command -v jq &>/dev/null || {
+  echo "jq not installed (https://jqlang.org)" >&2
+  exit 1
+}
+
+command -v parse-changelog &>/dev/null || {
+  echo "parse-changelog not installed (https://github.com/taiki-e/parse-changelog)" >&2
+  exit 1
+}
+
+if [[ "$(branch-name)" = main ]] ; then
+  git switch -c "release-$version"
+fi
+
+check-changes
 
 echo 'Making sure version is correct.'
 
@@ -38,14 +114,25 @@ awk-in-place Cargo.toml '
   }
   { print }'
 
-awk-in-place README.md '{
-    sub(/https:\/\/docs\.rs\/roundable\/[0-9]+.[0-9]+.[0-9]+\//, "https://docs.rs/roundable/'$version'/")
-    print
-  }'
+# Fix docs.rs links in README, if present
+echo 'Updating links in README.md'
+for name in $(crate-names) ; do
+  awk-in-place README.md '{
+      sub(/https:\/\/docs\.rs\/'"$name"'\/[0-9]+.[0-9]+.[0-9]+\//, \
+        "https://docs.rs/'"$name"'/'$version'/")
+      print
+    }'
+done
 
 cargo check --quiet
 
-cargo semver-checks check-release
+# Do semver checks only if there is a version on crates.io to compare to.
+# FIXME: can’t tell if crates.io search failed for another reason.
+main_crate_name=$(crate-names | head -1)
+if (cd / && cargo info "$main_crate_name" &>/dev/null) ; then
+  echo 'Doing semantic versioning checks'
+  cargo semver-checks || { echo ; confirm 'Release anyway?' ; }
+fi
 
 awk-in-place CHANGELOG.md '
   /^## / && !done {
@@ -53,21 +140,6 @@ awk-in-place CHANGELOG.md '
     done=1
   }
   { print }'
-
-# Check for changes
-if git ls-files --exclude-standard --other | grep . >/dev/null ; then
-  echo 'Found untracked files:' >&2
-  git ls-files --exclude-standard --other | sed -e 's/^/  /' >&2
-  echo >&2
-  echo 'Please commit changes before proceeding.' >&2
-  exit 1
-fi
-
-git diff --color --exit-code HEAD || {
-  echo >&2
-  echo 'Please commit changes before proceeding.' >&2
-  exit 1
-}
 
 # Confirm changelog
 changelog=$(mktemp)
@@ -81,10 +153,23 @@ cat "$changelog"
 echo
 confirm 'Release notes displayed above. Continue?'
 
-cargo publish
+# Commit version bump if necessary.
+check-changes &>/dev/null || {
+  git add -u
+  git commit --cleanup=verbatim --file - <<EOF
+Release ${version}
 
-git tag --sign --file "$changelog" --cleanup=verbatim "v${version}"
-git push --tags origin main
+$(parse-changelog CHANGELOG.md "$version")
+EOF
+}
+
+check-changes
+
+git tag --force --sign --file "$changelog" --cleanup=verbatim "v${version}"
+git push --force --tags origin HEAD
+auto-pr "Release ${version}"
+
+cargo publish
 
 awk-in-place CHANGELOG.md '
   /^## Release/ && !done {
@@ -93,9 +178,12 @@ awk-in-place CHANGELOG.md '
   }
   { print }'
 
+git switch -c post-release
 git add CHANGELOG.md
 git diff --staged
 
 confirm 'Commit with message "Prepping CHANGELOG.md for development."?'
 
 git commit -m 'Prepping CHANGELOG.md for development.'
+git push --force origin HEAD
+auto-pr "Prepping CHANGELOG.md for development"
