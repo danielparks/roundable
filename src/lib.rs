@@ -6,8 +6,8 @@
 //!
 //! The [`Roundable`] trait adds the following functions to roundable values:
 //!
-//!  * [`Roundable::try_round_to(factor, tie_strategy)`](Roundable::try_round_to())
-//!    (returns `None` on overflow)
+//!  * [`Roundable::try_round_to(factor,
+//!    tie_strategy)`](Roundable::try_round_to()) (returns `None` on overflow)
 //!  * [`Roundable::round_to(factor, tie_strategy)`](Roundable::round_to())
 //!    (panics on overflow)
 //!
@@ -28,8 +28,8 @@
 //!
 //! “Ties” are numbers exactly halfway between two round numbers, e.g. 0.5 when
 //! rounding to the nearest whole number. Traditionally, ties are resolved by
-//! picking the higher number, but there are other strategies. `Roundable` supports
-//! the following rules:
+//! picking the higher number, but there are other strategies. `Roundable`
+//! supports the following rules:
 //!
 //!   * [`Tie::Up`]: Round ties up (what most people consider correct).
 //!   * [`Tie::Down`]: Round ties down.
@@ -140,14 +140,15 @@ pub enum Tie {
 
     /// Round half toward even.
     ///
-    /// “Even” has a special meaning here since we only care about round values.
-    /// If we are rounding to the nearest 10, then 0 is even, 10 is odd, 20 is
-    /// even, and so on.
+    /// “Even” has a special meaning here since we only care about round
+    /// values. If we are rounding to the nearest 10, then 0 is even, 10 is
+    /// odd, 20 is even, and so on.
     ///
     /// If we are rounding to whole numbers, then even and odd have the
     /// conventional meaning.
     ///
-    /// In general, a multiple of factor _n_ is even if `(n / factor) % 2 == 0`.
+    /// In general, a multiple of factor _n_ is even if `(n / factor) % 2 ==
+    /// 0`.
     ///
     /// ## Examples
     ///
