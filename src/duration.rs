@@ -178,7 +178,7 @@ mod tests {
 
     #[test]
     #[should_panic(
-        expected = "nanos_to_duration() overflowed seconds value for Duration: TryFromIntError(())"
+        expected = "nanos_to_duration() overflowed seconds value for Duration: TryFromIntError"
     )]
     fn nanos_to_duration_overflow() {
         let _ = nanos_to_duration(Duration::MAX.as_nanos() + 1);
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     #[should_panic(
-        expected = "nanos_to_duration() overflowed seconds value for Duration: TryFromIntError(())"
+        expected = "nanos_to_duration() overflowed seconds value for Duration: TryFromIntError"
     )]
     #[allow(clippy::arithmetic_side_effects)]
     fn nanos_to_duration_overflow_manual() {
