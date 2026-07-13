@@ -22,6 +22,7 @@ macro_rules! roundable_float {
                     "try_round_to() requires positive factor",
                 );
 
+                let epsilon = 1e-11;
                 let remainder = self % factor;
                 let base = self - remainder;
 
@@ -32,17 +33,17 @@ macro_rules! roundable_float {
                         Tie::TowardZero => self > 0.0,
                         Tie::AwayFromZero => self < 0.0,
                         Tie::TowardEven =>
-                            (abs((base / factor) % 2.0) < Self::EPSILON)
+                            (abs((base / factor) % 2.0) < epsilon)
                             ^ (self < 0.0),
                         Tie::TowardOdd =>
-                            (abs((base / factor) % 2.0) >= Self::EPSILON)
+                            (abs((base / factor) % 2.0) >= epsilon)
                             ^ (self < 0.0),
                     }
                 };
 
                 if self > 0.0 {
-                    if remainder - factor / 2.0 < -Self::EPSILON
-                        || ( abs(remainder - factor / 2.0) < Self::EPSILON
+                    if remainder - factor / 2.0 < -epsilon
+                        || ( abs(remainder - factor / 2.0) < epsilon
                             && use_smaller() )
                     {
                         Some(base)
@@ -50,8 +51,8 @@ macro_rules! roundable_float {
                         Some(base + factor)
                     }
                 } else { // self <= 0.0
-                    if remainder - factor / 2.0 + factor < -Self::EPSILON
-                        || ( abs(remainder + factor / 2.0) < Self::EPSILON
+                    if remainder - factor / 2.0 + factor < -epsilon
+                        || ( abs(remainder + factor / 2.0) < epsilon
                             && use_smaller() )
                     {
                         Some(base - factor)
@@ -259,12 +260,33 @@ mod tests {
 
     #[test]
     fn round_awkward_float_tie() {
-        check!(0.4 == 0.3.round_to(0.2, Tie::Up));
-        check!(0.2 == 0.3.round_to(0.2, Tie::Down));
-        check!(0.2 == 0.3.round_to(0.2, Tie::TowardZero));
-        check!(0.4 == 0.3.round_to(0.2, Tie::AwayFromZero));
-        check!(0.4 == 0.3.round_to(0.2, Tie::TowardEven));
-        check!(0.2 == 0.3.round_to(0.2, Tie::TowardOdd));
+        check!(1.1 == 1.05.round_to(0.1, Tie::Up));
+        check!(1.0 == 1.05.round_to(0.1, Tie::Down));
+        check!(1.0 == 1.05.round_to(0.1, Tie::TowardZero));
+        check!(1.1 == 1.05.round_to(0.1, Tie::AwayFromZero));
+        check!(1.0 == 1.05.round_to(0.1, Tie::TowardEven));
+        check!(1.1 == 1.05.round_to(0.1, Tie::TowardOdd));
+
+        check!(10.1 == 10.05.round_to(0.1, Tie::Up));
+        check!(10.0 == 10.05.round_to(0.1, Tie::Down));
+        check!(10.0 == 10.05.round_to(0.1, Tie::TowardZero));
+        check!(10.1 == 10.05.round_to(0.1, Tie::AwayFromZero));
+        check!(10.0 == 10.05.round_to(0.1, Tie::TowardEven));
+        check!(10.1 == 10.05.round_to(0.1, Tie::TowardOdd));
+
+        check!(1_000.1 == 1_000.05.round_to(0.1, Tie::Up));
+        check!(1_000.0 == 1_000.05.round_to(0.1, Tie::Down));
+        check!(1_000.0 == 1_000.05.round_to(0.1, Tie::TowardZero));
+        check!(1_000.1 == 1_000.05.round_to(0.1, Tie::AwayFromZero));
+        check!(1_000.0 == 1_000.05.round_to(0.1, Tie::TowardEven));
+        check!(1_000.1 == 1_000.05.round_to(0.1, Tie::TowardOdd));
+
+        check!(1_000_000.1 == 1_000_000.05.round_to(0.1, Tie::Up));
+        check!(1_000_000.0 == 1_000_000.05.round_to(0.1, Tie::Down));
+        check!(1_000_000.0 == 1_000_000.05.round_to(0.1, Tie::TowardZero));
+        check!(1_000_000.1 == 1_000_000.05.round_to(0.1, Tie::AwayFromZero));
+        check!(1_000_000.0 == 1_000_000.05.round_to(0.1, Tie::TowardEven));
+        check!(1_000_000.1 == 1_000_000.05.round_to(0.1, Tie::TowardOdd));
     }
 
     #[test]
